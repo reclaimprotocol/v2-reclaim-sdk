@@ -74,7 +74,7 @@ Designed to request proofs from the Reclaim protocol and manage the flow of clai
 
 ## Usage Flow
 
-<img src='./readme/usage-flow.svg' width='900' />
+<img src='./readme/usage-flow-2.svg' width='900' />
 
 ## Dependency Diagram
 
