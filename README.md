@@ -22,9 +22,7 @@ Designed to request proofs from the Reclaim protocol and manage the flow of clai
 - ### ProofRequest Interface
 
   - **title:** `string` - Title of the request
-  - **baseCallbackUrl:** `string` - Base callback URL
   - **requestedProofs:** `ProviderV2[]` - Proofs requested by the application
-  - **callbackId?:** `string` - Callback ID
   - **contextMessage?:** `string` - Context message for the proof request
   - **contextAddress?:** `string` - Context address for the proof request
   - **requestorSignature?:** `string` - Signature of the requestor
