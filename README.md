@@ -23,12 +23,11 @@ Designed to request proofs from the Reclaim protocol and manage the flow of clai
 
   - **title:** `string` - Title of the request
   - **baseCallbackUrl:** `string` - Base callback URL
-  - **requestedProofs:** `HttpsProviderV2[]` - Proofs requested by the application
+  - **requestedProofs:** `ProviderV2[]` - Proofs requested by the application
   - **callbackId?:** `string` - Callback ID
   - **contextMessage?:** `string` - Context message for the proof request
   - **contextAddress?:** `string` - Context address for the proof request
-  - **requestorAddress?:** `string` - Master wallet address of the requestor
-  - **requestorPublicKey?:** `string` - Ephemeral public key of the requestor
+  - **requestorSignature?:** `string` - Signature of the requestor
 
 - ### Template Interface:
 
@@ -51,7 +50,7 @@ Designed to request proofs from the Reclaim protocol and manage the flow of clai
   - **provider:** `string` - The provider type, e.g google-login
   - **payload:** `Map<string, Object>` - The payload corresponding to the provider type
 
-- ### HttpsProviderV2 Interface:
+- ### ProviderV2 Interface:
 
   - **headers?:** `Map<string, string>` _(Any additional headers to be sent with the request)_
   - **url:** `string` _(URL to make the request to, e.g., "https://amazon.in/orders?q=abcd")_
