@@ -82,3 +82,43 @@ Designed to request proofs from the Reclaim protocol and manage the flow of clai
 - `Malformed proof request`: The proof request is structurally incorrect or missing required elements.
 
 - `Invalid AppCallbackUrl format`: The provided AppCallbackUrl is not in the expected format.
+
+## Create ProofRequest Example
+
+```typescript
+const privateKey = 'YOUR_PRIVATE_KEY'
+
+const proofRequest: ProofRequest = {
+  title: 'Example Proof Request',
+  requestedProofs: [
+    {
+      url: 'https://api.example.com/data',
+      method: 'GET',
+      responseRedactions: [
+        { start: 10, end: 20 },
+        { start: 30, end: 40 }
+      ],
+      responseMatches: [
+        { type: 'string', value: 'important-data' },
+        { type: 'regex', pattern: '\\d{3}-\\d{2}-\\d{4}' }
+      ],
+      geoLocation: '37.7749,-122.4194'
+    }
+  ],
+  contextMessage: 'Please provide the necessary proofs for verification.',
+  contextAddress: '0x0'
+}
+
+const dataToSign = JSON.stringify(proofRequest)
+
+const signature = signData(dataToSign, privateKey)
+
+const proofRequestWithSignature: ProofRequest = {
+  ...proofRequestWithoutSensitiveHeaders,
+  requestorSignature: signature
+}
+
+// Send the proof request to the AppClip/InstantApp
+// Verify the signature on the AppClip side
+const isSignatureValid = verifySignature(dataToSign, signature)
+```
