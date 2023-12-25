@@ -6,47 +6,46 @@ Designed to request proofs from the Reclaim protocol and manage the flow of clai
 
 - ### Reclaim Interface
 
-  - #### `requestProof(request: ProofRequest, AppCallbackUrl: string): Template`
+  - #### `requestProof(request: ReclaimRequest, AppCallbackUrl: string): TemplateWithLink`
 
     Requests proof using the provided proof request.
 
     **Parameters:**
 
-    - `request`: ProofRequest (The proof request object)
+    - `request`: ReclaimRequest (The proof request object)
     - `AppCallbackUrl`: callback url which will receive the proof from AppClip/InstantApp
 
     **Returns:**
 
-    - `Template`: A template instance based on the proof request.
+    - `TemplateWithLink`: A link to AppClip/AppInstant with Template Data
 
-- ### ProofRequest Interface
+- ### ReclaimRequest Interface
 
   - **title:** `string` - Title of the request
-  - **requestedProofs:** `ProviderV2[]` - Proofs requested by the application
+  - **requestedProofs:** `RequestedProof[]` - Proofs requested by the application
   - **contextMessage?:** `string` - Context message for the proof request
   - **contextAddress?:** `string` - Context address for the proof request
   - **requestorSignature?:** `string` - Signature of the requestor
 
+- ### RequestedProof interface
+
+  - **name:** `string` - Title of the request
+  - **provider:** `ProviderV2` - Proof requested by the application
+  - **metadata**: {logoUri?: string, description?: string} - Metadata of the proof provider
+
+- ### TemplateWithLink Interface:
+
+  - **template**: `Template`
+  - **link**: `string`
+
 - ### Template Interface:
 
   - **id:** `string`
-  - **sessionId:** `string`
   - **name:** `string`
   - **callbackUrl:** `string`
-  - **claims:** `Claim[]`
-  - **requestorAddress?:** `string`
-  - **requestorPublicKey?:** `string`
-
-- ### Claim Interface:
-
-  - **templateClaimId:** `string`
+  - **claims:** `RequestedProof[]`
   - **context:** `string`
-  - **provider:** `ProviderParams`
-
-- ### ProviderParams Interface:
-
-  - **provider:** `string` - The provider type, e.g google-login
-  - **payload:** `Map<string, Object>` - The payload corresponding to the provider type
+  - **requestorSignature?:** `string`
 
 - ### ProviderV2 Interface:
 
