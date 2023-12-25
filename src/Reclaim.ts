@@ -1,23 +1,24 @@
-import { uuid } from 'uuidv4';
+import { v4 } from 'uuid';
 import { Template, ReclaimRequest, IReclaim, TemplateWithLink } from "./interfaces";
 import { isValidURL } from './utils';
 import { APP_CLIP_LINK } from './config';
 
-export class Reclaim implements IReclaim {
-    public timer?: number;
 
-    // Constructor to initialize the accessKey property
+export class Reclaim implements IReclaim {
+
+    public timers: Map<string, NodeJS.Timer> = new Map()
+
     constructor(private accessKey?: string) { }
 
-    // Method to request proof with a callback and optional custom AppCallbackUrl
-    requestProof(request: ReclaimRequest, CallbackHandler: () => void, AppCallbackUrl?: string): TemplateWithLink {
+    requestProof(request: ReclaimRequest, CallbackHandler: (proof: any, error: any) => void, AppCallbackUrl?: string): TemplateWithLink {
+
         // Default callbackUrl to a hosted URL if AppCallbackUrl is not provided
         let callbackUrl = AppCallbackUrl || 'https://hosted.reclaimprotocol.com';
+        const sessionKey = v4();
 
         // If AppCallbackUrl is not provided, modify the callbackUrl with accessKey and sessionKey
         if (AppCallbackUrl === undefined) {
             const accessKey = this.getAccessKey();
-            const sessionKey = uuid();
             callbackUrl = `${callbackUrl}/?accessKey=${accessKey}&sessionKey=${sessionKey}`;
         }
 
@@ -27,7 +28,7 @@ export class Reclaim implements IReclaim {
         }
 
         // Generate a unique ID for the template
-        const id = uuid();
+        const id = v4();
         const requestedProofs = request.requestedProofs;
         const context = JSON.stringify({
             contextMessage: request.contextMessage || '',
@@ -48,14 +49,24 @@ export class Reclaim implements IReclaim {
         const link = APP_CLIP_LINK + encodeURIComponent(JSON.stringify(template));
 
         // Set up a timer to periodically check the callbackUrl for a response
-        this.timer = setInterval(async () => {
-            const response = await fetch(callbackUrl);
-            if (response.ok) {
-                // If the response is successful, trigger the callback and stop the timer
-                CallbackHandler();
-                clearInterval(this.timer);
+        const intervalId = setInterval(async () => {
+            try {
+                console.log('Checking callbackUrl for proof...');
+                const response = await fetch(callbackUrl);
+                if (response.ok) {
+                    const proofs = await response.json();
+                    // If the response is successful, trigger the callback and stop the timer
+                    CallbackHandler(proofs, undefined);
+                    clearInterval(this.timers.get(sessionKey));
+                }
+            } catch (error) {
+                // If the response is not successful, trigger the callback with an error and stop the timer
+                CallbackHandler(undefined, error);
+                clearInterval(this.timers.get(sessionKey));
             }
         }, 3000);
+
+        this.timers.set(sessionKey, intervalId);
 
         // Return the template and link
         return { template, link };
