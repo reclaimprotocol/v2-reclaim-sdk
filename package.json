@@ -1,0 +1,16 @@
+{
+  "name": "v2-reclaim-sdk",
+  "version": "0.0.1",
+  "description": "Designed to request proofs from the Reclaim protocol and manage the flow of claims and witness interactions.",
+  "main": "dist/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "ethers": "^6.9.1",
+    "uuid": "^9.0.1",
+    "uuidv4": "^6.2.13"
+  }
+}
