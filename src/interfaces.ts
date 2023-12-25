@@ -23,7 +23,7 @@ export interface ProviderV2 {
 }
 
 export interface IReclaim {
-    requestProof(request: ReclaimRequest, AppCallbackUrl: string): TemplateWithLink;
+    requestProof(request: ReclaimRequest, CallbackHandler: () => void, AppCallbackUrl: string | undefined): TemplateWithLink;
 }
 
 export interface ResponseMatch {
