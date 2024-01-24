@@ -6,7 +6,11 @@ import { ethers } from 'ethers'
 import canonicalize from 'canonicalize'
 import { getWitnessesForClaim, assertValidSignedClaim } from './utils'
 
-const DEFAULT_RECLAIM_CALLBACK_URL = 'https://connect.reclaimprotocol.org/callback'
+const DEFAULT_RECLAIM_CALLBACK_URL =
+    'https://api.reclaimprotocol.org/callback?callbackId='
+const DEFAULT_RECLAIM_STATUS_URL =
+    'https://api.reclaimprotocol.org/get/proof-submission-status/'
+const RECLAIM_SHARE_URL = 'https://share.reclaimprotocol.org/instant/'
 
 export class ReclaimClient {
     applicationId: string
@@ -27,13 +31,12 @@ export class ReclaimClient {
         }
     }
 
-    async createVerificationRequest() {
-        const appCallbackUrl = await this.getAppCallbackUrl()
-
+    async createVerificationRequest(providers: string[]) {
+        const template = await this.createLinkRequest(providers)
         this.verificationRequest = new ReclaimVerficationRequest(
-            appCallbackUrl,
             this.sessionId,
-            this.getStatusUrl()
+            this.getStatusUrl(),
+            template
         )
 
         return this.verificationRequest
@@ -65,11 +68,13 @@ export class ReclaimClient {
             throw new Error('Invalid signature')
         }
 
-        const deepLink = 'reclaimprotocol://requestedProofs'
-        const deepLinkUrl = `${deepLink}/${encodeURIComponent(
-            JSON.stringify({ ...this.requestedProofs, signature: this.signature })
+
+        const templateData = {template:  {...this.requestedProofs, signature: this.signature }}
+        const template = `${RECLAIM_SHARE_URL}/?${encodeURIComponent(
+            JSON.stringify(templateData)
         )}`
-        return deepLinkUrl
+
+        return template
     }
 
     setAppCallbackUrl(url: string) {
@@ -79,7 +84,7 @@ export class ReclaimClient {
     async getAppCallbackUrl() {
         let appCallbackUrl = this.appCallbackUrl
         if (!appCallbackUrl) {
-            appCallbackUrl = `${DEFAULT_RECLAIM_CALLBACK_URL}/${this.sessionId}`
+            appCallbackUrl = `${DEFAULT_RECLAIM_CALLBACK_URL}${this.sessionId}`
         }
         return appCallbackUrl
     }
@@ -91,7 +96,7 @@ export class ReclaimClient {
     getStatusUrl() {
         let statusUrl = this.statusUrl
         if (!statusUrl) {
-            statusUrl = `${DEFAULT_RECLAIM_CALLBACK_URL}/${this.sessionId}`
+            statusUrl = `${DEFAULT_RECLAIM_STATUS_URL}${this.sessionId}`
         }
         return statusUrl
     }
@@ -242,21 +247,15 @@ export class ReclaimClient {
 class ReclaimVerficationRequest {
     onSuccessCallback?: (data: Proof | Error | unknown) => void | unknown
     onFailureCallback?: (data: Proof | Error | unknown) => void | unknown
-    appCallbackUrl: string
-    reclaimDeepLink?: string
-    sessionId?: string
-    deepLinkData?: QueryParams | null
+    sessionId: string
+    template: string
     statusUrl: string
     intervals: Map<string, NodeJS.Timer> = new Map()
 
-    constructor(
-        appCallbackUrl: string,
-        sessionId: string,
-        statusUrl: string
-    ) {
-        this.appCallbackUrl = appCallbackUrl
+    constructor(sessionId: string, statusUrl: string, template: string) {
         this.sessionId = sessionId
         this.statusUrl = statusUrl
+        this.template = template
     }
 
     on(
@@ -278,17 +277,18 @@ class ReclaimVerficationRequest {
                 try {
                     const res = await fetch(this.statusUrl)
                     const data = await res.json()
-                    if (data.status === 'pending') return
-                    if (data.status === 'success') {
-                        const verified = await ReclaimClient.verifySignedProof(data.proof)
+                    if (!data.isProofSubmitted) return
+
+                    data.proofs.forEach(async (proof: Proof) => {
+                        const verified = await ReclaimClient.verifySignedProof(proof)
                         if (!verified) {
                             throw new Error('Proof not verified')
                         }
-                        if (this.onSuccessCallback) {
-                            this.onSuccessCallback(data.proof)
-                        }
-                        clearInterval(this.intervals.get(this.sessionId!))
+                    })
+                    if (this.onSuccessCallback) {
+                        this.onSuccessCallback(data.session.proofs)
                     }
+                    clearInterval(this.intervals.get(this.sessionId!))
                 } catch (e: Error | unknown) {
                     if (this.onFailureCallback) {
                         this.onFailureCallback(e)
@@ -297,6 +297,7 @@ class ReclaimVerficationRequest {
                 }
             }, 3000)
             this.intervals.set(this.sessionId, interval)
+            return this.template
         }
     }
 }
