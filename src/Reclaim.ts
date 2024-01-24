@@ -177,7 +177,7 @@ export class ReclaimClient {
   }
 
   registerHandlers() {
-    Linking.addEventListener('url', this.handleDeepLinkEvent.bind(this));
+    // Linking.addEventListener('url', this.handleDeepLinkEvent.bind(this));
   }
 
   async handleDeepLinkEvent(event: { url: string }) {
@@ -299,7 +299,7 @@ class ReclaimVerficationRequest {
 
   async start() {
     if (this.reclaimDeepLink) {
-      await Linking.openURL(this.reclaimDeepLink);
+      
     }
   }
 }
