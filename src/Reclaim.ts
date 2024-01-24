@@ -1,7 +1,7 @@
 import type { ProviderV2, Proof, RequestedProofs, Context } from './interfaces'
 import { getIdentifierFromClaimInfo } from './witness'
-import type { QueryParams, SignedClaim } from './types'
-import uuid from 'uuid'
+import type {SignedClaim } from './types'
+import {v4} from 'uuid'
 import { ethers } from 'ethers'
 import canonicalize from 'canonicalize'
 import { getWitnessesForClaim, assertValidSignedClaim } from './utils'
@@ -10,7 +10,7 @@ const DEFAULT_RECLAIM_CALLBACK_URL =
     'https://api.reclaimprotocol.org/callback?callbackId='
 const DEFAULT_RECLAIM_STATUS_URL =
     'https://api.reclaimprotocol.org/get/proof-submission-status/'
-const RECLAIM_SHARE_URL = 'https://share.reclaimprotocol.org/instant/'
+const RECLAIM_SHARE_URL = 'https://share.reclaimprotocol.org/instant/?template='
 
 export class ReclaimClient {
     applicationId: string
@@ -27,7 +27,7 @@ export class ReclaimClient {
         if (sessionId) {
             this.sessionId = sessionId
         } else {
-            this.sessionId = uuid.v4().toString()
+            this.sessionId = v4().toString()
         }
     }
 
@@ -69,8 +69,8 @@ export class ReclaimClient {
         }
 
 
-        const templateData = {template:  {...this.requestedProofs, signature: this.signature }}
-        const template = `${RECLAIM_SHARE_URL}/?${encodeURIComponent(
+        const templateData = {...this.requestedProofs, signature: this.signature }
+        const template = `${RECLAIM_SHARE_URL}${encodeURIComponent(
             JSON.stringify(templateData)
         )}`
 
@@ -178,7 +178,7 @@ export class ReclaimClient {
         })
 
         this.requestedProofs = {
-            id: uuid.v4().toString(),
+            id: v4().toString(),
             sessionId: this.sessionId,
             name: 'web-SDK',
             callbackUrl: callbackUrl,

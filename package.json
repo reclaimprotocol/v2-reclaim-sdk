@@ -2,13 +2,21 @@
   "name": "v2-reclaim-sdk",
   "version": "0.0.3",
   "description": "Designed to request proofs from the Reclaim protocol and manage the flow of claims and witness interactions.",
-  "main": "build/index.d.ts",
+  "main": "dist/index.js",
   "keywords": [],
   "files": [
     "build"
   ],
+  "tsup": {
+    "entry": [
+      "src/index.ts"
+    ],
+    "splitting": false,
+    "sourcemap": true,
+    "clean": true
+  },
   "scripts": {
-    "build": "bob build && tsc",
+    "build": "tsup",
     "release": "release-it",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -44,12 +52,13 @@
     }
   },
   "devDependencies": {
-    "@release-it/conventional-changelog": "^5.0.0",
     "@bconnorwhite/bob": "^2.9.5",
+    "@release-it/conventional-changelog": "^5.0.0",
     "@types/qs": "^6.9.11",
     "@types/url-parse": "^1.4.11",
     "@types/uuid": "^9.0.7",
     "release-it": "^15.0.0",
+    "tsup": "^8.0.1",
     "typescript": "^5.3.3"
   },
   "dependencies": {
