@@ -1,52 +1,127 @@
-export interface ReclaimRequest {
-    title: string;
-    requestedProofs: RequestedProof[];
-    contextMessage?: string;
-    contextAddress?: string;
-    requestorSignature?: string;
-}
-
-export interface RequestedProof {
-    name: string;
-    provider: ProviderV2;
-    metadata?: { logoUri?: string, description?: string };
-}
-
 export interface ProviderV2 {
-    headers?: Map<string, string>;
+  id: string;
+  name: string;
+  logoUrl: string;
+  url: string;
+  urlType: string;
+  Method: 'GET' | 'POST';
+  Body: Object | null;
+  loginUrl: string;
+  loginCookies: string[];
+  loginHeaders: string[];
+  isActive: boolean;
+  responseSelections: ResponseSelection[];
+  completedTrigger: string;
+  customInjection: string;
+  bodySniff: BodySniff;
+  userAgent: string | null;
+  isApproved: boolean;
+}
+
+export interface ResponseSelection {
+  JSONPath: string;
+  XPath: string;
+  responseMatch: string;
+}
+
+export interface BodySniff {
+  enabled: boolean;
+  regex: string;
+}
+
+export interface Proof {
+  identifier: string;
+  claimData: ProviderClaimData;
+  signatures: string[];
+  witnesses: WitnessData[];
+  extractedParameterValues: any;
+}
+
+export interface WitnessData {
+  id: string;
+  url: string;
+}
+
+export interface ProviderClaimData {
+  provider: string;
+  parameters: string;
+  owner: string;
+  timestampS: number;
+  context: string;
+  /**
+   * identifier of the claim;
+   * Hash of (provider, parameters, context)
+   *
+   * This is different from the claimId returned
+   * from the smart contract
+   */
+  identifier: string;
+  epoch: number;
+}
+
+export interface RequestedProofs {
+  id: string;
+  sessionId: string;
+  name: string;
+  callbackUrl: string;
+  claims: RequestedClaim[];
+}
+export interface RequestedClaim {
+  provider: string;
+  context: string;
+  payload: Payload;
+}
+export interface Payload {
+  metadata: {
+    name: string;
+    logoUrl: string;
+  };
+  url: string;
+  urlType: 'CONSTANT' | 'REGEX';
+  method: 'GET' | 'POST';
+  login: {
     url: string;
-    method: 'GET' | 'POST';
-    body?: string | Uint8Array;
-    responseRedactions: ResponseRedaction[];
-    responseMatches: ResponseMatch[];
-    geoLocation?: string;
-}
-
-export interface IReclaim {
-    requestProof(request: ReclaimRequest, CallbackHandler: () => void, AppCallbackUrl: string | undefined): TemplateWithLink;
-}
-
-export interface ResponseMatch {
-    type: 'regex' | 'contains';
-    value: string;
-}
-
-export interface ResponseRedaction {
+  };
+  responseSelections: {
+    responseMatch: string;
     xPath?: string;
     jsonPath?: string;
+  }[];
+  templateClaimId: string;
+  parameters: {
+    [key: string]: string;
+  };
+  headers?: { [key: string]: string };
+  customInjection?: string;
+  bodySniff?: {
+    enabled: boolean;
     regex?: string;
+  };
+  userAgent?: {
+    ios?: string;
+    android?: string;
+  };
+  useZk?: boolean;
 }
 
-export interface TemplateWithLink {
-    template: Template;
-    link: string;
+export interface Context {
+  contextAddress: string;
+  contextMessage: string;
 }
 
-export interface Template {
-    id: string;
-    name: string;
-    callbackUrl: string;
-    claims: RequestedProof[];
-    context: string;
-    requestorSignature?: string,
+export interface Beacon {
+  /**
+   * Get the witnesses for the epoch specified
+   * or the current epoch if none is specified
+   */
+  getState(epoch?: number): Promise<BeaconState>;
+
+  close?(): Promise<void>;
 }
+
+export type BeaconState = {
+  witnesses: WitnessData[];
+  epoch: number;
+  witnessesRequiredForClaim: number;
+  nextEpochTimestampS: number;
+};

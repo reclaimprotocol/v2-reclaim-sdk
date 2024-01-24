@@ -1,1 +1,0 @@
-export const APP_CLIP_LINK = "link-to-app-clip";

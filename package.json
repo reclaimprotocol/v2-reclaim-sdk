@@ -3,14 +3,50 @@
   "version": "0.0.1",
   "description": "Designed to request proofs from the Reclaim protocol and manage the flow of claims and witness interactions.",
   "main": "dist/index.js",
+  "keywords": [],
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "",
-  "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/reclaimprotocol/v2-reclaim-sdk.git"
+  },
+  "author": "alimansour0002 <106339946+alimansour0002@users.noreply.github.com> (https://github.com/alimansour0002)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/reclaimprotocol/v2-reclaim-sdk/issues"
+  },
+  "homepage": "https://github.com/reclaimprotocol/v2-reclaim-sdk#readme",
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org/"
+  },
+  "release-it": {
+    "git": {
+      "commitMessage": "chore: release ${version}",
+      "tagName": "v${version}"
+    },
+    "npm": {
+      "publish": true,
+      "tag": "beta"
+    },
+    "github": {
+      "release": true
+    },
+    "plugins": {
+      "@release-it/conventional-changelog": {
+        "preset": "angular"
+      }
+    }
+  },
+  "devDependencies": {
+    "release-it": "^15.0.0"
+  },
   "dependencies": {
+    "canonicalize": "^2.0.0",
     "ethers": "^6.9.1",
-    "uuid": "^9.0.1",
-    "uuidv4": "^6.2.13"
+    "uuid": "^9.0.1"
   }
 }
