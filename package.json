@@ -44,6 +44,7 @@
     }
   },
   "devDependencies": {
+    "@release-it/conventional-changelog": "^5.0.0",
     "@types/qs": "^6.9.11",
     "@types/url-parse": "^1.4.11",
     "@types/uuid": "^9.0.7",
