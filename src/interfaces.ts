@@ -64,6 +64,7 @@ export interface RequestedProofs {
   sessionId: string;
   name: string;
   callbackUrl: string;
+  statusUrl: string;
   claims: RequestedClaim[];
 }
 export interface RequestedClaim {

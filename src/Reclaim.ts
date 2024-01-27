@@ -149,7 +149,8 @@ export class ReclaimClient {
 
     buildRequestedProofs(
         providers: ProviderV2[],
-        callbackUrl: string
+        callbackUrl: string,
+        statusUrl?: string
     ): RequestedProofs {
         const claims = providers.map(provider => {
             return {
@@ -182,6 +183,7 @@ export class ReclaimClient {
             sessionId: this.sessionId,
             name: 'web-SDK',
             callbackUrl: callbackUrl,
+            statusUrl: statusUrl ? statusUrl : this.getStatusUrl(),
             claims: claims
         };
 
