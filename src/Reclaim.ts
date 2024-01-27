@@ -276,9 +276,10 @@ class ReclaimVerficationRequest {
                 try {
                     const res = await fetch(this.statusUrl)
                     const data = await res.json()
-                    if (!data.isProofSubmitted) return
-
-                    data.proofs.forEach(async (proof: Proof) => {
+                    
+                    if(!data.session)return
+                    
+                    data.session.proofs.forEach(async (proof: Proof) => {
                         const verified = await ReclaimClient.verifySignedProof(proof)
                         if (!verified) {
                             throw new Error('Proof not verified')

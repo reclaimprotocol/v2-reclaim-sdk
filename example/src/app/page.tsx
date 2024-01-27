@@ -7,7 +7,7 @@ import Link from 'next/link'
 
 export default function Home () {
   const APP_ID = '0xa1da33c9ed80e050130abe3482bc05ae82dab512'
-  const reclaimClient = new ReclaimClient(APP_ID)
+  const reclaimClient = new ReclaimClient(APP_ID, "9f526264-1ed8-4998-a415-4080c6e7e1df")
   const [verificationReq, setVerificationReq] = React.useState<any>(null)
   const [extracted, setExtracted] = React.useState<any>(null)
   const { Canvas } = useQRCode()
@@ -34,10 +34,10 @@ export default function Home () {
       console.log('req', req.template)
       req.on('success', (data: any) => {
         if (data) {
-          const proof = data
-          console.log('success', proof.extractedParameterValues)
+          const proofs = data
+          console.log('success', proofs[0])
 
-          setExtracted(JSON.stringify(proof.extractedParameterValues))
+          setExtracted(JSON.stringify(proofs[0].extractedParameterValues))
         }
       })
       setVerificationReq(req)
@@ -64,13 +64,13 @@ export default function Home () {
           <Canvas
             text={verificationReq.template}
             options={{
-              errorCorrectionLevel: 'M',
+              errorCorrectionLevel: 'L',
               margin: 3,
               scale: 10,
-              width: 400,
+              width: 320,
               color: {
-                dark: '#010599FF',
-                light: '#6d9'
+                dark: '#000',
+                light: '#ddd'
               }
             }}
           />
@@ -78,7 +78,7 @@ export default function Home () {
         )}
         {extracted && (
           <div className='text-center'>
-            <h1 className='text-5xl'>{extracted}</h1>
+            <h1 className='text-2xl'>{extracted}</h1>
           </div>
         )}
         
