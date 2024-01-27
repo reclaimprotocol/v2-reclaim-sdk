@@ -1,4 +1,4 @@
-import type { ProviderV2, Proof, RequestedProofs, Context } from './interfaces'
+import type { ProviderV2, Proof, RequestedProofs, Context, RequestedClaim } from './interfaces'
 import { getIdentifierFromClaimInfo } from './witness'
 import type {SignedClaim } from './types'
 import {v4} from 'uuid'
@@ -7,9 +7,9 @@ import canonicalize from 'canonicalize'
 import { getWitnessesForClaim, assertValidSignedClaim } from './utils'
 
 const DEFAULT_RECLAIM_CALLBACK_URL =
-    'https://api.reclaimprotocol.org/callback?callbackId='
+    'https://api.reclaimprotocol.org/v2/callback?callbackId='
 const DEFAULT_RECLAIM_STATUS_URL =
-    'https://api.reclaimprotocol.org/get/proof-submission-status/'
+    'https://api.reclaimprotocol.org/v2/session/'
 const RECLAIM_SHARE_URL = 'https://share.reclaimprotocol.org/instant/?template='
 
 export class ReclaimClient {
@@ -155,38 +155,37 @@ export class ReclaimClient {
             return {
                 provider: provider.name,
                 context: JSON.stringify(this.context),
+                templateClaimId: provider.id,
                 payload: {
                     metadata: {
                         name: provider.name,
                         logoUrl: provider.logoUrl
                     },
                     url: provider.url,
-                    urlType: provider.urlType,
-                    method: provider.Method,
+                    urlType: provider.urlType as "CONSTANT" | "REGEX",
+                    method: provider.method as "GET" | "POST",
                     login: {
                         url: provider.loginUrl
                     },
-                    parameter: {},
+                    parameters: {},
                     responseSelections: provider.responseSelections,
-                    templateClaimId: provider.id,
-                    headers: provider.loginHeaders,
                     customInjection: provider.customInjection,
                     bodySniff: provider.bodySniff,
-                    userAgent: provider.userAgent
+                    userAgent: provider.userAgent,
+                    useZk: true
                 }
-            }
-        })
+            } as RequestedClaim;
+        });
 
         this.requestedProofs = {
             id: v4().toString(),
             sessionId: this.sessionId,
             name: 'web-SDK',
             callbackUrl: callbackUrl,
-            //@ts-ignore
             claims: claims
-        }
+        };
 
-        return this.requestedProofs!
+        return this.requestedProofs!;
     }
 
     addContext(address: string, message: string) {

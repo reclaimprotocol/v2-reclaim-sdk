@@ -4,7 +4,7 @@ export interface ProviderV2 {
   logoUrl: string;
   url: string;
   urlType: string;
-  Method: 'GET' | 'POST';
+  method: 'GET' | 'POST';
   Body: Object | null;
   loginUrl: string;
   loginCookies: string[];
@@ -69,6 +69,7 @@ export interface RequestedProofs {
 export interface RequestedClaim {
   provider: string;
   context: string;
+  templateClaimId: string;
   payload: Payload;
 }
 export interface Payload {
@@ -87,7 +88,6 @@ export interface Payload {
     xPath?: string;
     jsonPath?: string;
   }[];
-  templateClaimId: string;
   parameters: {
     [key: string]: string;
   };
