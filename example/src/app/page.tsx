@@ -7,7 +7,7 @@ import Link from 'next/link'
 
 export default function Home () {
   const APP_ID = '0xa1da33c9ed80e050130abe3482bc05ae82dab512'
-  const reclaimClient = new ReclaimClient(APP_ID, "9f526264-1ed8-4998-a415-4080c6e7e1df")
+  const reclaimClient = new ReclaimClient(APP_ID)
   const [verificationReq, setVerificationReq] = React.useState<any>(null)
   const [extracted, setExtracted] = React.useState<any>(null)
   const { Canvas } = useQRCode()
@@ -57,7 +57,7 @@ export default function Home () {
 
   return (
     <main className='flex min-h-screen flex-col items-center justify-between p-24'>
-      <div className='max-w-5xl w-full items-center justify-between font-mono text-sm lg:flex'>
+      <div className='max-w-5xl gap-2  w-full items-center justify-between font-mono text-sm lg:flex lg:flex-col lg:gap-10'>
         Reclaim DEMO
         {verificationReq && (
           <Link href={verificationReq.template} target='_blank'>
