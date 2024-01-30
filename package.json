@@ -40,7 +40,7 @@
     },
     "npm": {
       "publish": true,
-      "tag": "beta",
+      "tag": "public",
       "access": "public"
     },
     "github": {
