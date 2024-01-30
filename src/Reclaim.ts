@@ -126,20 +126,34 @@ export class ReclaimClient {
         providerNames: string[]
     ): Promise<ProviderV2[]> {
         try {
+
             const reclaimServerUrl =
                 'https://api.reclaimprotocol.org/get/httpsproviders'
-            const response = await fetch(reclaimServerUrl)
 
-            if (!response.ok) {
+            const appProvidersUrl = `https://api.reclaimprotocol.org/v2/app-http-providers/${this.applicationId}`
+
+
+            const response = await fetch(reclaimServerUrl)
+            const appResponse = await fetch(appProvidersUrl)
+
+
+            if (!response.ok || !appResponse.ok) {
                 throw new Error('Failed to fetch HTTP providers')
             }
 
-            const providers = (await response.json()).providers as ProviderV2[]
-
-            const filteredProviders = providers.filter(provider => {
+            const allProviders = (await response.json()).providers as ProviderV2[]
+            const appProviders = (await appResponse.json()).result.providers as string[]
+            const filteredProviders = allProviders.filter(provider => {
                 return providerNames.includes(provider.name)
             })
-
+            if (filteredProviders.length == 0) {
+                throw new Error(`Providers is not available for this application`)
+            }
+            for (let provider of filteredProviders) {
+                if (!appProviders.includes(provider.name)) {
+                    throw new Error(`Provider ${provider.name} is not available for this application`)
+                }
+            }
             return filteredProviders
         } catch (error) {
             console.error('Error fetching HTTP providers:', error)

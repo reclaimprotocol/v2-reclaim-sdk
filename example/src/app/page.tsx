@@ -6,14 +6,14 @@ import { useQRCode } from 'next-qrcode'
 import Link from 'next/link'
 
 export default function Home () {
-  const APP_ID = '0xa1da33c9ed80e050130abe3482bc05ae82dab512'
+  const APP_ID = '0xB9511925B80818d8e555Eaa31077792879C86746'
   const reclaimClient = new ReclaimClient(APP_ID)
   const [verificationReq, setVerificationReq] = React.useState<any>(null)
   const [extracted, setExtracted] = React.useState<any>(null)
   const { Canvas } = useQRCode()
   useEffect(() => {
     const getVerificationReq = async () => {
-      const providers = ['Steam ID V2']
+      const providers = ['Aadhar DOB V2']
       const PRIVATE_KEY =
         '016179b9820f8bb49972208e4ab4ef165bb57190888bff53e5f47c440696c13a'
 
