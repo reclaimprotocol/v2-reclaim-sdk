@@ -1,7 +1,7 @@
 import type { ProviderV2, Proof, RequestedProofs, Context, RequestedClaim } from './interfaces'
 import { getIdentifierFromClaimInfo } from './witness'
-import type {SignedClaim } from './types'
-import {v4} from 'uuid'
+import type { SignedClaim } from './types'
+import { v4 } from 'uuid'
 import { ethers } from 'ethers'
 import canonicalize from 'canonicalize'
 import { getWitnessesForClaim, assertValidSignedClaim } from './utils'
@@ -64,12 +64,12 @@ export class ReclaimClient {
             )
             .toLowerCase()
 
-        if (appId !== this.applicationId) {
+        if (ethers.getAddress(appId) !== ethers.getAddress(this.applicationId)) {
             throw new Error('Invalid signature')
         }
 
 
-        const templateData = {...this.requestedProofs, signature: this.signature }
+        const templateData = { ...this.requestedProofs, signature: this.signature }
         const template = `${RECLAIM_SHARE_URL}${encodeURIComponent(
             JSON.stringify(templateData)
         )}`
@@ -278,9 +278,9 @@ class ReclaimVerficationRequest {
                 try {
                     const res = await fetch(this.statusUrl)
                     const data = await res.json()
-                    
-                    if(!data.session)return
-                    
+
+                    if (!data.session) return
+
                     data.session.proofs.forEach(async (proof: Proof) => {
                         const verified = await ReclaimClient.verifySignedProof(proof)
                         if (!verified) {
