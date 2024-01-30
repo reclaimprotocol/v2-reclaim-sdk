@@ -31,7 +31,8 @@
   },
   "homepage": "https://github.com/reclaimprotocol/v2-reclaim-sdk#readme",
   "publishConfig": {
-    "registry": "https://registry.npmjs.org/"
+    "registry": "https://registry.npmjs.org/",
+    "access": "public"
   },
   "release-it": {
     "git": {
