@@ -12,6 +12,15 @@ const DEFAULT_RECLAIM_STATUS_URL =
     'https://api.reclaimprotocol.org/v2/session/'
 const RECLAIM_SHARE_URL = 'https://share.reclaimprotocol.org/instant/?template='
 
+function escapeRegExp(string: string) {
+    return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // $& means the whole matched string
+}
+function replaceAll(str: string, find: string, replace: string) {
+    return str.replace(new RegExp(escapeRegExp(find), 'g'), replace);
+}
+
+
+
 export class ReclaimClient {
     applicationId: string
     signature?: string
@@ -70,9 +79,11 @@ export class ReclaimClient {
 
 
         const templateData = { ...this.requestedProofs, signature: this.signature }
-        const template = `${RECLAIM_SHARE_URL}${encodeURIComponent(
+        let template = `${RECLAIM_SHARE_URL}${encodeURIComponent(
             JSON.stringify(templateData)
         )}`
+        template = replaceAll(template, '(', '%28')
+        template = replaceAll(template, ')', '%29')
 
         return template
     }
@@ -168,12 +179,12 @@ export class ReclaimClient {
     ): RequestedProofs {
         const claims = providers.map(provider => {
             return {
-                provider: provider.name,
+                provider: encodeURIComponent(provider.name),
                 context: JSON.stringify(this.context),
                 templateClaimId: provider.id,
                 payload: {
                     metadata: {
-                        name: provider.name,
+                        name: encodeURIComponent(provider.name),
                         logoUrl: provider.logoUrl
                     },
                     url: provider.url,
