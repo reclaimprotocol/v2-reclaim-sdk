@@ -16,7 +16,7 @@
     "clean": true
   },
   "scripts": {
-    "build": "tsup",
+    "build": "tsup --dts",
     "release": "release-it",
     "test": "echo \"Error: no test specified\" && exit 1"
   },

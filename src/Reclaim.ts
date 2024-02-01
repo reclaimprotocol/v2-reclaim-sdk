@@ -48,12 +48,13 @@ export class ReclaimClient {
             template
         )
 
+
         return this.verificationRequest
     }
 
     async createLinkRequest(providers: string[]) {
         const appCallbackUrl = await this.getAppCallbackUrl()
-        const providersV2 = await this.buildHttpProviderV2ByName(providers)
+        const providersV2 = await this.buildHttpProviderV2ByID(providers)
         if (!this.requestedProofs) {
             await this.buildRequestedProofs(providersV2, appCallbackUrl)
         }
@@ -84,6 +85,8 @@ export class ReclaimClient {
         )}`
         template = replaceAll(template, '(', '%28')
         template = replaceAll(template, ')', '%29')
+        
+        console.log('Reclaim Client template created with callback url: ', templateData.callbackUrl)
 
         return template
     }
@@ -133,8 +136,8 @@ export class ReclaimClient {
         return signature
     }
 
-    async buildHttpProviderV2ByName(
-        providerNames: string[]
+    async buildHttpProviderV2ByID(
+        providerIds: string[]
     ): Promise<ProviderV2[]> {
         try {
 
@@ -155,7 +158,7 @@ export class ReclaimClient {
             const allProviders = (await response.json()).providers as ProviderV2[]
             const appProviders = (await appResponse.json()).result.providers as string[]
             const filteredProviders = allProviders.filter(provider => {
-                return providerNames.includes(provider.name)
+                return providerIds.includes(provider.id)
             })
             if (filteredProviders.length == 0) {
                 throw new Error(`Providers is not available for this application`)
@@ -167,7 +170,7 @@ export class ReclaimClient {
             }
             return filteredProviders
         } catch (error) {
-            console.error('Error fetching HTTP providers:', error)
+            console.error(`Error fetching HTTP providers ${providerIds}:`, error)
             throw error
         }
     }
@@ -270,7 +273,7 @@ export class ReclaimClient {
     }
 }
 
-class ReclaimVerficationRequest {
+export class ReclaimVerficationRequest {
     onSuccessCallback?: (data: Proof | Error | unknown) => void | unknown
     onFailureCallback?: (data: Proof | Error | unknown) => void | unknown
     sessionId: string
@@ -282,6 +285,7 @@ class ReclaimVerficationRequest {
         this.sessionId = sessionId
         this.statusUrl = statusUrl
         this.template = template
+        console.log(`ReclaimVerficationRequest created with statusUrl: ${this.statusUrl}, template: ${this.template}, sessionId: ${this.sessionId}`)
     }
 
     on(
@@ -300,6 +304,8 @@ class ReclaimVerficationRequest {
     async start() {
         if (this.statusUrl && this.sessionId) {
             const interval = setInterval(async () => {
+                console.log('session id: ', this.sessionId)
+                console.log('Checking status...with status url: ', this.statusUrl)
                 try {
                     const res = await fetch(this.statusUrl)
                     const data = await res.json()
@@ -316,14 +322,24 @@ class ReclaimVerficationRequest {
                         this.onSuccessCallback(data.session.proofs)
                     }
                     clearInterval(this.intervals.get(this.sessionId!))
+                    this.intervals.delete(this.sessionId!)
                 } catch (e: Error | unknown) {
                     if (this.onFailureCallback) {
                         this.onFailureCallback(e)
                     }
                     clearInterval(this.intervals.get(this.sessionId!))
+                    this.intervals.delete(this.sessionId!)
                 }
             }, 3000)
+
             this.intervals.set(this.sessionId, interval)
+
+            setTimeout(() => {
+                if(this.intervals.has(this.sessionId)){
+                    clearInterval(this.intervals.get(this.sessionId!))
+                }
+            }, 1000 * 60 * 5)
+
             return this.template
         }
     }
