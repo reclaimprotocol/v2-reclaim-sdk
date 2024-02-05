@@ -4,11 +4,11 @@ import React, { useEffect } from 'react'
 import { ReclaimClient } from 'v2-reclaim-sdk'
 import { useQRCode } from 'next-qrcode'
 import Link from 'next/link'
-import { ReclaimVerficationRequest } from 'v2-reclaim-sdk/dist/index'
+import type { ReclaimVerficationRequest } from 'v2-reclaim-sdk/dist/index'
 
 export default function Home() {
   const [verificationReq, setVerificationReq] = React.useState<
-    ReclaimVerficationRequest | undefined
+     ReclaimVerficationRequest | undefined
   >()
   const [extracted, setExtracted] = React.useState<any>(null)
   const { Canvas } = useQRCode()
@@ -16,7 +16,7 @@ export default function Home() {
   const reclaimClient = new ReclaimClient(APP_ID)
 
   const getVerificationReq = async () => {
-    const providers = ['657dc04bde43d2886da5212b']
+    const providers = ['1bba104c-f7e3-4b58-8b42-f8c0346cdeab']
     const PRIVATE_KEY =
       'f8dac75849b4f1d3b91a205ead2e7ee9b3116f01bc20d7a647cc026dbae1b979'
 

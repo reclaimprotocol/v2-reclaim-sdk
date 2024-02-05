@@ -4,7 +4,7 @@ import type { SignedClaim } from './types'
 import { v4 } from 'uuid'
 import { ethers } from 'ethers'
 import canonicalize from 'canonicalize'
-import { getWitnessesForClaim, assertValidSignedClaim } from './utils'
+import { getWitnessesForClaim, assertValidSignedClaim, getShortenedUrl } from './utils'
 
 const DEFAULT_RECLAIM_CALLBACK_URL =
     'https://api.reclaimprotocol.org/v2/callback?callbackId='
@@ -85,8 +85,7 @@ export class ReclaimClient {
         )}`
         template = replaceAll(template, '(', '%28')
         template = replaceAll(template, ')', '%29')
-        
-        console.log('Reclaim Client template created with callback url: ', templateData.callbackUrl)
+        template = await getShortenedUrl(template)
 
         return template
     }
@@ -158,7 +157,7 @@ export class ReclaimClient {
             const allProviders = (await response.json()).providers as ProviderV2[]
             const appProviders = (await appResponse.json()).result.providers as string[]
             const filteredProviders = allProviders.filter(provider => {
-                return providerIds.includes(provider.id)
+                return providerIds.includes(provider.httpProviderId)
             })
             if (filteredProviders.length == 0) {
                 throw new Error(`Providers is not available for this application`)
@@ -285,7 +284,6 @@ export class ReclaimVerficationRequest {
         this.sessionId = sessionId
         this.statusUrl = statusUrl
         this.template = template
-        console.log(`ReclaimVerficationRequest created with statusUrl: ${this.statusUrl}, template: ${this.template}, sessionId: ${this.sessionId}`)
     }
 
     on(
@@ -304,8 +302,6 @@ export class ReclaimVerficationRequest {
     async start() {
         if (this.statusUrl && this.sessionId) {
             const interval = setInterval(async () => {
-                console.log('session id: ', this.sessionId)
-                console.log('Checking status...with status url: ', this.statusUrl)
                 try {
                     const res = await fetch(this.statusUrl)
                     const data = await res.json()

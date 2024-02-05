@@ -1,5 +1,6 @@
 export interface ProviderV2 {
   id: string;
+  httpProviderId: string;
   name: string;
   logoUrl: string;
   url: string;
