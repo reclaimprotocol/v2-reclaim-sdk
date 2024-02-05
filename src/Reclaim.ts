@@ -48,7 +48,6 @@ export class ReclaimClient {
             template
         )
 
-
         return this.verificationRequest
     }
 
@@ -155,7 +154,13 @@ export class ReclaimClient {
             }
 
             const allProviders = (await response.json()).providers as ProviderV2[]
-            const appProviders = (await appResponse.json()).result.providers as string[]
+            let appProviders: string[] = [];
+            try{
+                appProviders = (await appResponse.json()).result.providers as string[]
+            }catch(e){
+                throw new Error('APP_ID is not valid! Please try again once more.')
+            }
+            
             const filteredProviders = allProviders.filter(provider => {
                 return providerIds.includes(provider.httpProviderId)
             })
