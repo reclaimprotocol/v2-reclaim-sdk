@@ -1,10 +1,12 @@
 'use client'
 import React, { useEffect } from 'react'
 
-import { ReclaimClient } from 'v2-reclaim-sdk'
+import type { ReclaimVerficationRequest } from '@reclaimprotocol/js-sdk'
+import { ReclaimClient } from '@reclaimprotocol/js-sdk'
+
 import { useQRCode } from 'next-qrcode'
 import Link from 'next/link'
-import type { ReclaimVerficationRequest } from 'v2-reclaim-sdk/dist/index'
+
 
 export default function Home() {
   const [verificationReq, setVerificationReq] = React.useState<

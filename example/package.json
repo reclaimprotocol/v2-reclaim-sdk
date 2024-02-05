@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@reclaimprotocol/js-sdk": "^0.0.5",
     "next": "14.1.0",
     "next-qrcode": "^2.5.1",
     "qrcode": "^1.5.3",
