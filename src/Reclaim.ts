@@ -139,40 +139,20 @@ export class ReclaimClient {
     ): Promise<ProviderV2[]> {
         try {
 
-            const reclaimServerUrl =
-                'https://api.reclaimprotocol.org/get/httpsproviders'
-
             const appProvidersUrl = `https://api.reclaimprotocol.org/v2/app-http-providers/${this.applicationId}`
-
-
-            const response = await fetch(reclaimServerUrl)
             const appResponse = await fetch(appProvidersUrl)
 
-
-            if (!response.ok || !appResponse.ok) {
+            if (!appResponse.ok) {
                 throw new Error('Failed to fetch HTTP providers')
             }
 
-            const allProviders = (await response.json()).providers as ProviderV2[]
-            let appProviders: string[] = [];
-            try{
-                appProviders = (await appResponse.json()).result.providers as string[]
-            }catch(e){
+            let appProviders: ProviderV2[] = [];
+            try {
+                appProviders = (await appResponse.json()).result.providers as ProviderV2[]
+            } catch (e) {
                 throw new Error('APP_ID is not valid! Please try again once more.')
             }
-            
-            const filteredProviders = allProviders.filter(provider => {
-                return providerIds.includes(provider.httpProviderId)
-            })
-            if (filteredProviders.length == 0) {
-                throw new Error(`Providers is not available for this application`)
-            }
-            for (let provider of filteredProviders) {
-                if (!appProviders.includes(provider.name)) {
-                    throw new Error(`Provider ${provider.name} is not available for this application`)
-                }
-            }
-            return filteredProviders
+            return appProviders
         } catch (error) {
             console.error(`Error fetching HTTP providers ${providerIds}:`, error)
             throw error
@@ -336,7 +316,7 @@ export class ReclaimVerficationRequest {
             this.intervals.set(this.sessionId, interval)
 
             setTimeout(() => {
-                if(this.intervals.has(this.sessionId)){
+                if (this.intervals.has(this.sessionId)) {
                     clearInterval(this.intervals.get(this.sessionId!))
                 }
             }, 1000 * 60 * 5)
