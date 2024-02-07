@@ -181,7 +181,9 @@ export class ReclaimClient {
                 payload: {
                     metadata: {
                         name: encodeURIComponent(provider.name),
-                        logoUrl: provider.logoUrl
+                        logoUrl: provider.logoUrl,
+                        proofCardText: provider.proofCardText,
+                        proofCardTitle: provider.proofCardTitle,
                     },
                     url: provider.url,
                     urlType: provider.urlType as "CONSTANT" | "REGEX",

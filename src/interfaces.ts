@@ -1,22 +1,34 @@
 export interface ProviderV2 {
-  id: string;
-  httpProviderId: string;
-  name: string;
-  logoUrl: string;
-  url: string;
-  urlType: string;
-  method: 'GET' | 'POST';
-  Body: Object | null;
-  loginUrl: string;
-  loginCookies: string[];
-  loginHeaders: string[];
-  isActive: boolean;
-  responseSelections: ResponseSelection[];
-  completedTrigger: string;
-  customInjection: string;
-  bodySniff: BodySniff;
-  userAgent: string | null;
-  isApproved: boolean;
+  id: string
+  httpProviderId: string
+  name: string
+  logoUrl: string
+  url: string
+  method?: 'GET' | 'POST'
+  loginUrl: string
+  responseSelections: {
+    responseMatch: string
+    xPath?: string | undefined
+    jsonPath?: string | undefined
+  }[]
+  headers?: { [key: string]: string }
+  creatorEmail: string
+  applicationId: string[]
+  iconPath: { uri: string }
+  customInjection?: string
+  urlType: 'CONSTANT' | 'REGEX'
+  proofCardTitle: string
+  proofCardText: string
+  bodySniff?: {
+    enabled: boolean
+    regex?: string
+  }
+  userAgent?: {
+    ios?: string
+    android?: string
+  }
+  geoLocation?: string
+  matchType?: string
 }
 
 export interface ResponseSelection {
@@ -78,6 +90,8 @@ export interface Payload {
   metadata: {
     name: string;
     logoUrl: string;
+    proofCardTitle: string;
+    proofCardText: string;
   };
   url: string;
   urlType: 'CONSTANT' | 'REGEX';
