@@ -29,7 +29,7 @@ export class ReclaimClient {
     sessionId: string = ''
     requestedProofs?: RequestedProofs
     context: Context = { contextAddress: '0x0', contextMessage: '' }
-    verificationRequest?: ReclaimVerficationRequest
+    verificationRequest?: ReclaimVerificationRequest
 
     constructor(applicationId: string, sessionId?: string) {
         this.applicationId = applicationId
@@ -42,7 +42,7 @@ export class ReclaimClient {
 
     async createVerificationRequest(providers: string[]) {
         const template = await this.createLinkRequest(providers)
-        this.verificationRequest = new ReclaimVerficationRequest(
+        this.verificationRequest = new ReclaimVerificationRequest(
             this.sessionId,
             this.getStatusUrl(),
             template
@@ -93,7 +93,7 @@ export class ReclaimClient {
         this.appCallbackUrl = url
     }
 
-    async getAppCallbackUrl() {
+    getAppCallbackUrl() {
         let appCallbackUrl = this.appCallbackUrl
         if (!appCallbackUrl) {
             appCallbackUrl = `${DEFAULT_RECLAIM_CALLBACK_URL}${this.sessionId}`
@@ -139,6 +139,8 @@ export class ReclaimClient {
     ): Promise<ProviderV2[]> {
         try {
 
+            if(providerIds.length === 0) throw new Error('No provider Ids provided. Please pass at least one provider Id. Check https://dev.reclaimprotocol.org/applications for more details.')
+            
             const appProvidersUrl = `https://api.reclaimprotocol.org/v2/app-http-providers/${this.applicationId}`
             const appResponse = await fetch(appProvidersUrl)
 
@@ -152,7 +154,7 @@ export class ReclaimClient {
             } catch (e) {
                 throw new Error('APP_ID is not valid! Please try again once more.')
             }
-            const requiredProviders: ProviderV2[] = []
+
             for (let i = 0; i < providerIds.length; i++) {
                 const providerToAdd = appProviders.find(provider => provider.httpProviderId === providerIds[i])
                 if (!providerToAdd) {
@@ -264,7 +266,7 @@ export class ReclaimClient {
     }
 }
 
-export class ReclaimVerficationRequest {
+export class ReclaimVerificationRequest {
     onSuccessCallback?: (data: Proof | Error | unknown) => void | unknown
     onFailureCallback?: (data: Proof | Error | unknown) => void | unknown
     sessionId: string

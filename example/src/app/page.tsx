@@ -1,7 +1,7 @@
 'use client'
 import React, { useEffect } from 'react'
 
-import type { ReclaimVerficationRequest } from '@reclaimprotocol/js-sdk'
+import type { ReclaimVerificationRequest } from '@reclaimprotocol/js-sdk'
 import { ReclaimClient } from '@reclaimprotocol/js-sdk'
 
 import { useQRCode } from 'next-qrcode'
@@ -10,7 +10,7 @@ import Link from 'next/link'
 
 export default function Home() {
   const [verificationReq, setVerificationReq] = React.useState<
-     ReclaimVerficationRequest | undefined
+     ReclaimVerificationRequest | undefined
   >()
   const [extracted, setExtracted] = React.useState<any>(null)
   const { Canvas } = useQRCode()
@@ -24,9 +24,9 @@ export default function Home() {
 
     const providerV2 = await reclaimClient.buildHttpProviderV2ByID(providers)
 
-    const requestProofs = await reclaimClient.buildRequestedProofs(
+    const requestProofs = reclaimClient.buildRequestedProofs(
       providerV2,
-      await reclaimClient.getAppCallbackUrl()
+      reclaimClient.getAppCallbackUrl()
     )
 
     reclaimClient.setSignature(
