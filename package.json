@@ -42,7 +42,7 @@
     },
     "npm": {
       "publish": true,
-      "tag": "beta"
+      "tag": "latest"
     },
     "github": {
       "release": true
