@@ -288,7 +288,7 @@ export class ReclaimClient {
             throw new Error('Failed to fetch HTTP providers')
         }
 
-        this.myProvidersList = (await appResponse.json()).result.providers as ProviderV2[]
+        this.myProvidersList = (await appResponse.json()).providers.httpProvider as ProviderV2[]
         return this.myProvidersList
     }
 }
