@@ -118,6 +118,8 @@ export interface Payload {
     android?: string;
   };
   useZk?: boolean;
+  geoLocation?: string;
+  matchType?: string;
 }
 
 export interface Context {
