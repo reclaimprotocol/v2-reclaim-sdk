@@ -8,9 +8,9 @@ import { getWitnessesForClaim, assertValidSignedClaim, getShortenedUrl } from '.
 import { constants } from './constants'
 
 const DEFAULT_RECLAIM_CALLBACK_URL =
-    'https://api.reclaimprotocol.org/v2/callback?callbackId='
+    'https://api.reclaimprotocol.org/api/sdk/callback?callbackId='
 const DEFAULT_RECLAIM_STATUS_URL =
-    'https://api.reclaimprotocol.org/v2/session/'
+    'https://api.reclaimprotocol.org/api/sdk/session/'
 const RECLAIM_SHARE_URL = 'https://share.reclaimprotocol.org/instant/?template='
 
 function escapeRegExp(string: string) {
@@ -204,7 +204,9 @@ export class ReclaimClient {
                     customInjection: provider.customInjection,
                     bodySniff: provider.bodySniff,
                     userAgent: provider.userAgent,
-                    useZk: true
+                    useZk: true,
+                    geoLocation: provider.geoLocation ? provider.geoLocation : '',
+                    matchType: provider.matchType ? provider.matchType : 'greedy'
                 }
             } as RequestedClaim;
         });
