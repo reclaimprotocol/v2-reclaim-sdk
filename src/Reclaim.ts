@@ -5,6 +5,7 @@ import { v4 } from 'uuid'
 import { ethers } from 'ethers'
 import canonicalize from 'canonicalize'
 import { getWitnessesForClaim, assertValidSignedClaim, getShortenedUrl } from './utils'
+import { constants } from './constants'
 
 const DEFAULT_RECLAIM_CALLBACK_URL =
     'https://api.reclaimprotocol.org/v2/callback?callbackId='
@@ -30,6 +31,7 @@ export class ReclaimClient {
     requestedProofs?: RequestedProofs
     context: Context = { contextAddress: '0x0', contextMessage: '' }
     verificationRequest?: ReclaimVerificationRequest
+    myProvidersList: ProviderV2[] = []
 
     constructor(applicationId: string, sessionId?: string) {
         this.applicationId = applicationId
@@ -137,22 +139,28 @@ export class ReclaimClient {
     async buildHttpProviderV2ByID(
         providerIds: string[]
     ): Promise<ProviderV2[]> {
+
+        let appProviders: ProviderV2[] = [];
+
         try {
 
-            if(providerIds.length === 0) throw new Error('No provider Ids provided. Please pass at least one provider Id. Check https://dev.reclaimprotocol.org/applications for more details.')
-            
-            const appProvidersUrl = `https://api.reclaimprotocol.org/v2/app-http-providers/${this.applicationId}`
-            const appResponse = await fetch(appProvidersUrl)
+            if (providerIds.length === 0) throw new Error('No provider Ids provided. Please pass at least one provider Id. Check https://dev.reclaimprotocol.org/applications for more details.')
 
-            if (!appResponse.ok) {
-                throw new Error('Failed to fetch HTTP providers')
-            }
-
-            let appProviders: ProviderV2[] = [];
-            try {
-                appProviders = (await appResponse.json()).result.providers as ProviderV2[]
-            } catch (e) {
-                throw new Error('APP_ID is not valid! Please try again once more.')
+            if(this.myProvidersList.length > 0) {
+                appProviders = this.myProvidersList
+            } else {
+                const appProvidersUrl = `${constants.GET_PROVIDERS_BY_ID_API}/${this.applicationId}`
+                const appResponse = await fetch(appProvidersUrl)
+    
+                if (!appResponse.ok) {
+                    throw new Error('Failed to fetch HTTP providers')
+                }
+    
+                try {
+                    appProviders = (await appResponse.json()).result.providers as ProviderV2[]
+                } catch (e) {
+                    throw new Error('APP_ID is not valid! Please try again once more.')
+                }
             }
 
             for (let i = 0; i < providerIds.length; i++) {
@@ -265,6 +273,19 @@ export class ReclaimClient {
         }
 
         return true
+    }
+
+    async getMyProvidersList() {
+        if (this.myProvidersList.length > 0) return this.myProvidersList
+
+        const appProvidersUrl = `${constants.GET_PROVIDERS_BY_ID_API}/${this.applicationId}`
+        const appResponse = await fetch(appProvidersUrl)
+        if (!appResponse.ok) {
+            throw new Error('Failed to fetch HTTP providers')
+        }
+
+        this.myProvidersList = (await appResponse.json()).result.providers as ProviderV2[]
+        return this.myProvidersList
     }
 }
 
