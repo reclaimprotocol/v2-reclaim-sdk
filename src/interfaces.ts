@@ -104,9 +104,6 @@ export interface Payload {
     xPath?: string;
     jsonPath?: string;
   }[];
-  parameters: {
-    [key: string]: string;
-  };
   headers?: { [key: string]: string };
   customInjection?: string;
   bodySniff?: {
@@ -117,7 +114,6 @@ export interface Payload {
     ios?: string;
     android?: string;
   };
-  useZk?: boolean;
   geoLocation?: string;
   matchType?: string;
 }

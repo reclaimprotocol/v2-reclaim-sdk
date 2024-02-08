@@ -201,12 +201,10 @@ export class ReclaimClient {
                     login: {
                         url: provider.loginUrl
                     },
-                    parameters: {},
                     responseSelections: provider.responseSelections,
                     customInjection: provider.customInjection,
                     bodySniff: provider.bodySniff,
                     userAgent: provider.userAgent,
-                    useZk: true,
                     geoLocation: provider.geoLocation ? provider.geoLocation : '',
                     matchType: provider.matchType ? provider.matchType : 'greedy'
                 }
