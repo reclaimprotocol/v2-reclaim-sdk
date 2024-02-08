@@ -3,7 +3,7 @@
   "version": "0.0.16",
   "description": "Designed to request proofs from the Reclaim protocol and manage the flow of claims and witness interactions.",
   "main": "dist/index.js",
-  "types": "dist/index.t.ts",
+  "types": "dist/index.d.ts",
   "keywords": [],
   "files": [
     "dist"
