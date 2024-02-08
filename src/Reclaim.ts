@@ -157,14 +157,16 @@ export class ReclaimClient {
                 }
     
                 try {
-                    appProviders = (await appResponse.json()).result.providers as ProviderV2[]
+                    appProviders = (await appResponse.json()).providers.httpProvider as ProviderV2[]
                 } catch (e) {
                     throw new Error('APP_ID is not valid! Please try again once more.')
                 }
             }
 
             for (let i = 0; i < providerIds.length; i++) {
-                const providerToAdd = appProviders.find(provider => provider.httpProviderId === providerIds[i])
+                const providerToAdd = appProviders.find(provider => {
+                    return provider.httpProviderId === providerIds[i]
+                })
                 if (!providerToAdd) {
                     throw new Error('Required provider Id ' + providerIds[i] + ' not register to the app make sure you are using the right providerId Available Provider Ids : ' + appProviders.map(p => p.httpProviderId).join(','))
                 }

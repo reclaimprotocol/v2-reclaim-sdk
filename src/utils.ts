@@ -103,7 +103,7 @@ export function assertValidSignedClaim (
 
 export async function getShortenedUrl (url: string) {
   try {
-    const response = await fetch('https://api.reclaimprotocol.org/v2/shortener', {
+    const response = await fetch('https://api.reclaimprotocol.org/api/sdk/shortener', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
